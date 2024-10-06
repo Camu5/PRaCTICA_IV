@@ -1,0 +1,471 @@
+#RESUMEN:
+Proporción de Células Nucleadas:
+
+Control:
+
+Media: 19.0%
+Mediana: 22.6%
+Desviación estándar: 13.4%
+Mínimo: 0%
+Máximo: 36%
+Experimental:
+
+Media: 39.8%
+Mediana: 41.9%
+Desviación estándar: 30.6%
+Mínimo: 9.48%
+Máximo: 86.9%
+Prueba de Normalidad:
+
+Control: 
+𝑊
+=
+0.97416
+W=0.97416, p-value = 0.9012 (normal)
+Experimental: 
+𝑊
+=
+0.91439
+W=0.91439, p-value = 0.4944 (normal)
+Prueba t:
+
+𝑡
+=
+−
+1.3933
+t=−1.3933, df = 5.4843, p-value = 0.2174. No se encuentra diferencia significativa en la media entre los grupos.
+Proporción de Células Cornificadas:
+
+Control:
+
+Media: 43.5%
+Mediana: 52%
+Desviación estándar: 40.9%
+Mínimo: 0%
+Máximo: 87.2%
+Experimental:
+
+Media: 39.5%
+Mediana: 54.8%
+Desviación estándar: 37.8%
+Mínimo: 0%
+Máximo: 84.3%
+Prueba de Normalidad:
+
+Control: 
+𝑊
+=
+0.86226
+W=0.86226, p-value = 0.2365 (normal)
+Experimental: 
+𝑊
+=
+0.85959
+W=0.85959, p-value = 0.2268 (normal)
+Prueba t:
+
+𝑡
+=
+0.16324
+t=0.16324, df = 7.9506, p-value = 0.8744. No se encuentra diferencia significativa.
+Proporción de Leucocitos:
+
+Control:
+
+Media: 37.5%
+Mediana: 12%
+Desviación estándar: 46.7%
+Mínimo: 0%
+Máximo: 98.1%
+Experimental:
+
+Media: 20.7%
+Mediana: 0%
+Desviación estándar: 39.4%
+Mínimo: 0%
+Máximo: 90.5%
+Prueba de Normalidad:
+
+Control: 
+𝑊
+=
+0.80613
+W=0.80613, p-value = 0.09083 (normal)
+Experimental: 
+𝑊
+=
+0.64497
+W=0.64497, p-value = 0.00232 (no normal)
+Prueba de Wilcoxon:
+
+𝑊
+=
+15
+W=15, p-value = 0.6558. No se encuentra diferencia significativa.
+
+
+
+
+
+
+
+> # ESTADÍSTICA PARA PRÁCTICA IV TALLER
+> 
+> # Instala paquetes si es necesario
+> install.packages("tidyverse")  # Incluye ggplot2, dplyr, etc.
+Error in install.packages : Updating loaded packages
+> install.packages("readr")
+Error in install.packages : Updating loaded packages
+> 
+> # Cargar librerías
+> library(tidyverse)
+> 
+> # Leer el archivo CSV
+> datos <- read_csv("C:/Users/HOME/Pictures/CICLO ESTRAL/Medidas extra/DATOS_CITOLOGÍA.csv", locale = locale(encoding = "ISO-8859-1"))
+Rows: 10 Columns: 10                                                                                     
+── Column specification ──────────────────────────────────────────────
+Delimiter: ","
+chr (3): ID, CONDICIÓN, FASE IDENTIFI.
+dbl (7): Celulas nucleadas, Células cornificadas, Leucocitos, Tota...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+> 
+> # Verificar los datos
+> head(datos)
+# A tibble: 6 × 10
+  ID     CONDICIÓN    `FASE IDENTIFI.` `Celulas nucleadas`
+  <chr>  <chr>        <chr>                          <dbl>
+1 1C_10x CONTROL      METAESTRO                          7
+2 1E_10x EXPERIMENTAL PROESTRO                          53
+3 2C_10x CONTROL      ESTRO                             18
+4 2E_10x EXPERIMENTAL ESTRO                             28
+5 3C_10x CONTROL      DIESTRO                            0
+6 3E_10x EXPERIMENTAL DIESTRO                           31
+# ℹ 6 more variables: `Células cornificadas` <dbl>, Leucocitos <dbl>,
+#   `Total células:` <dbl>,
+#   `Proporción de células nucleadas (%)` <dbl>,
+#   `Proporción de células cornificadas (%)` <dbl>,
+#   `Proporción de leucocitos (%)` <dbl>
+> 
+> # Convertir la columna 'Condición' en un factor
+> datos$Condición <- factor(datos$CONDICIÓN, levels = c(1, 2), labels = c("Control", "Experimental"))
+> 
+> # Verificar estructura de los datos
+> str(datos)
+spc_tbl_ [10 × 11] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+ $ ID                                    : chr [1:10] "1C_10x" "1E_10x" "2C_10x" "2E_10x" ...
+ $ CONDICIÓN                             : chr [1:10] "CONTROL" "EXPERIMENTAL" "CONTROL" "EXPERIMENTAL" ...
+ $ FASE IDENTIFI.                        : chr [1:10] "METAESTRO" "PROESTRO" "ESTRO" "ESTRO" ...
+ $ Celulas nucleadas                     : num [1:10] 7 53 18 28 0 31 4 18 5 55
+ $ Células cornificadas                  : num [1:10] 0 0 26 34 2 0 13 25 34 295
+ $ Leucocitos                            : num [1:10] 24 8 6 0 101 296 0 0 0 0
+ $ Total células:                        : num [1:10] 31 61 50 62 103 327 17 43 39 350
+ $ Proporción de células nucleadas (%)   : num [1:10] 22.6 86.9 36 45.2 0 ...
+ $ Proporción de células cornificadas (%): num [1:10] 0 0 52 54.84 1.94 ...
+ $ Proporción de leucocitos (%)          : num [1:10] 77.4 13.1 12 0 98.1 ...
+ $ Condición                             : Factor w/ 2 levels "Control","Experimental": NA NA NA NA NA NA NA NA NA NA
+ - attr(*, "spec")=
+  .. cols(
+  ..   ID = col_character(),
+  ..   CONDICIÓN = col_character(),
+  ..   `FASE IDENTIFI.` = col_character(),
+  ..   `Celulas nucleadas` = col_double(),
+  ..   `Células cornificadas` = col_double(),
+  ..   Leucocitos = col_double(),
+  ..   `Total células:` = col_double(),
+  ..   `Proporción de células nucleadas (%)` = col_double(),
+  ..   `Proporción de células cornificadas (%)` = col_double(),
+  ..   `Proporción de leucocitos (%)` = col_double()
+  .. )
+ - attr(*, "problems")=<externalptr> 
+> 
+> # Cargar librería dplyr
+> library(dplyr)
+> 
+> 
+> ##########################################################################################################
+> # ESTADÍSTICA PARA CELULAS NUCELADAS
+> 
+> # Estadísticas descriptivas para la proporción de células nucleadas por condición
+> descriptivas_nucleadas <- datos %>%
++   group_by(CONDICIÓN) %>%
++   summarise(
++     media = mean(`Proporción de células nucleadas (%)`, na.rm = TRUE),
++     mediana = median(`Proporción de células nucleadas (%)`, na.rm = TRUE),
++     sd = sd(`Proporción de células nucleadas (%)`, na.rm = TRUE),
++     minimo = min(`Proporción de células nucleadas (%)`, na.rm = TRUE),
++     maximo = max(`Proporción de células nucleadas (%)`, na.rm = TRUE)
++   )
+> 
+> # Mostrar resultados
+> descriptivas_nucleadas
+# A tibble: 2 × 6
+  CONDICIÓN    media mediana    sd minimo maximo
+  <chr>        <dbl>   <dbl> <dbl>  <dbl>  <dbl>
+1 CONTROL       19.0    22.6  13.4   0      36  
+2 EXPERIMENTAL  39.8    41.9  30.6   9.48   86.9
+> 
+> ####################
+> # Prueba de normalidad para proporción de células nucleadas en Control
+> shapiro.test(datos$`Proporción de células nucleadas (%)`[datos$CONDICIÓN == "CONTROL"])
+
+	Shapiro-Wilk normality test
+
+data:  datos$`Proporción de células nucleadas (%)`[datos$CONDICIÓN == "CONTROL"]
+W = 0.97416, p-value = 0.9012
+
+> 
+> # Prueba de normalidad para proporción de células nucleadas en Experimental
+> shapiro.test(datos$`Proporción de células nucleadas (%)`[datos$CONDICIÓN == "EXPERIMENTAL"])
+
+	Shapiro-Wilk normality test
+
+data:  datos$`Proporción de células nucleadas (%)`[datos$CONDICIÓN == "EXPERIMENTAL"]
+W = 0.91439, p-value = 0.4944
+
+> ####################
+> 
+> # RESULTADOS:
+> # PARA CONTROL: W = 0.97416, p-value = 0.9012
+> # PARA EXPERIMENTAL: W = 0.91439, p-value = 0.4944
+> 
+> # Dado que los datos parecen ser normales
+> # Prueba t para comparar la proporción de células nucleadas entre control y experimental
+> t.test(`Proporción de células nucleadas (%)` ~ CONDICIÓN, data = datos)
+
+	Welch Two Sample t-test
+
+data:  Proporción de células nucleadas (%) by CONDICIÓN
+t = -1.3933, df = 5.4843, p-value = 0.2174
+alternative hypothesis: true difference in means between group CONTROL and group EXPERIMENTAL is not equal to 0
+95 percent confidence interval:
+ -58.27207  16.60407
+sample estimates:
+     mean in group CONTROL mean in group EXPERIMENTAL 
+                    18.986                     39.820 
+
+> 
+> # Cargar la librería ggplot2 para gráficas
+> library(ggplot2)
+> 
+> # Boxplot para la proporción de células nucleadas
+> ggplot(datos, aes(x = CONDICIÓN, y = `Proporción de células nucleadas (%)`, fill = CONDICIÓN)) +
++   geom_boxplot() +
++   labs(title = "Comparación respecto a las células nucleadas",
++        x = "Condición",
++        y = "Proporción de Células Nucleadas (%)") +
++   theme_minimal()
+> 
+> 
+> ##########################################################################################################
+> 
+> 
+> ##########################################################################################################
+> # ESTADÍSTICA PARA CELULAS CORNIFICADAS
+> 
+> # Estadísticas descriptivas para la proporción de células cornificadas por condición
+> descriptivas_cornificadas <- datos %>%
++   group_by(CONDICIÓN) %>%
++   summarise(
++     media = mean(`Proporción de células cornificadas (%)`, na.rm = TRUE),
++     mediana = median(`Proporción de células cornificadas (%)`, na.rm = TRUE),
++     sd = sd(`Proporción de células cornificadas (%)`, na.rm = TRUE),
++     minimo = min(`Proporción de células cornificadas (%)`, na.rm = TRUE),
++     maximo = max(`Proporción de células cornificadas (%)`, na.rm = TRUE)
++   )
+> 
+> # Mostrar resultados
+> print(descriptivas_cornificadas)
+# A tibble: 2 × 6
+  CONDICIÓN    media mediana    sd minimo maximo
+  <chr>        <dbl>   <dbl> <dbl>  <dbl>  <dbl>
+1 CONTROL       43.5    52    40.9      0   87.2
+2 EXPERIMENTAL  39.5    54.8  37.8      0   84.3
+> 
+> # Prueba de normalidad para proporción de células cornificadas en Control
+> shapiro.test(datos$`Proporción de células cornificadas (%)`[datos$CONDICIÓN == "CONTROL"])
+
+	Shapiro-Wilk normality test
+
+data:  datos$`Proporción de células cornificadas (%)`[datos$CONDICIÓN == "CONTROL"]
+W = 0.86226, p-value = 0.2365
+
+> 
+> # Prueba de normalidad para proporción de células cornificadas en Experimental
+> shapiro.test(datos$`Proporción de células cornificadas (%)`[datos$CONDICIÓN == "EXPERIMENTAL"])
+
+	Shapiro-Wilk normality test
+
+data:  datos$`Proporción de células cornificadas (%)`[datos$CONDICIÓN == "EXPERIMENTAL"]
+W = 0.85959, p-value = 0.2268
+
+> 
+> # RESULTADOS:
+> # PARA CONTROL: W = 0.86226, p-value = 0.2365
+> # PARA EXPERIMENTAL: W = 0.85959, p-value = 0.2268
+> 
+> # Dado que los datos parecen ser normales
+> t.test(`Proporción de células cornificadas (%)` ~ CONDICIÓN, data = datos)
+
+	Welch Two Sample t-test
+
+data:  Proporción de células cornificadas (%) by CONDICIÓN
+t = 0.16324, df = 7.9506, p-value = 0.8744
+alternative hypothesis: true difference in means between group CONTROL and group EXPERIMENTAL is not equal to 0
+95 percent confidence interval:
+ -53.40817  61.53617
+sample estimates:
+     mean in group CONTROL mean in group EXPERIMENTAL 
+                    43.518                     39.454 
+
+> 
+> # Boxplot para la proporción de células cornificadas
+> ggplot(datos, aes(x = CONDICIÓN, y = `Proporción de células cornificadas (%)`, fill = CONDICIÓN)) +
++   geom_boxplot() +
++   labs(title = "Comparación de Proporción de Células Cornificadas",
++        x = "Condición",
++        y = "Proporción de Células Cornificadas (%)") +
++   theme_minimal()
+> ##########################################################################################################
+> 
+> ##########################################################################################################
+> # ESTADÍSTICA PARA LEUCOCITOS
+> 
+> # Estadísticas descriptivas para la proporción de leucocitos por condición
+> descriptivas_leucocitos <- datos %>%
++   group_by(CONDICIÓN) %>%
++   summarise(
++     media = mean(`Proporción de leucocitos (%)`, na.rm = TRUE),
++     mediana = median(`Proporción de leucocitos (%)`, na.rm = TRUE),
++     sd = sd(`Proporción de leucocitos (%)`, na.rm = TRUE),
++     minimo = min(`Proporción de leucocitos (%)`, na.rm = TRUE),
++     maximo = max(`Proporción de leucocitos (%)`, na.rm = TRUE)
++   )
+> 
+> # Mostrar resultados
+> print(descriptivas_leucocitos)
+# A tibble: 2 × 6
+  CONDICIÓN    media mediana    sd minimo maximo
+  <chr>        <dbl>   <dbl> <dbl>  <dbl>  <dbl>
+1 CONTROL       37.5      12  46.7      0   98.1
+2 EXPERIMENTAL  20.7       0  39.4      0   90.5
+> 
+> # Prueba de normalidad para proporción de leucocitos en Control
+> shapiro.test(datos$`Proporción de leucocitos (%)`[datos$CONDICIÓN == "CONTROL"])
+
+	Shapiro-Wilk normality test
+
+data:  datos$`Proporción de leucocitos (%)`[datos$CONDICIÓN == "CONTROL"]
+W = 0.80613, p-value = 0.09083
+
+> 
+> # Prueba de normalidad para proporción de leucocitos en Experimental
+> shapiro.test(datos$`Proporción de leucocitos (%)`[datos$CONDICIÓN == "EXPERIMENTAL"])
+
+	Shapiro-Wilk normality test
+
+data:  datos$`Proporción de leucocitos (%)`[datos$CONDICIÓN == "EXPERIMENTAL"]
+W = 0.64497, p-value = 0.00232
+
+> ####################
+> 
+> # RESULTADOS:
+> # PARA CONTROL: W = 0.80613, p-value = 0.09083
+> # PARA EXPERIMENTAL: W = 0.64497, p-value = 0.00232
+> 
+> # Dado que los datos parecen NO ser normales
+> wilcox.test(`Proporción de leucocitos (%)` ~ CONDICIÓN, data = datos)
+
+	Wilcoxon rank sum test with continuity correction
+
+data:  Proporción de leucocitos (%) by CONDICIÓN
+W = 15, p-value = 0.6558
+alternative hypothesis: true location shift is not equal to 0
+
+Warning message:
+In wilcox.test.default(x = DATA[[1L]], y = DATA[[2L]], ...) :
+  cannot compute exact p-value with ties
+> 
+> # Boxplot para la proporción de leucocitos
+> ggplot(datos, aes(x = CONDICIÓN, y = `Proporción de leucocitos (%)`, fill = CONDICIÓN)) +
++   geom_boxplot() +
++   labs(title = "Comparación de Proporción de Leucocitos",
++        x = "Condición",
++        y = "Proporción de Leucocitos (%)") +
++   theme_minimal()
+> ##########################################################################################################
+> 
+> ##########################################################################################################
+> #GRÁFRICA PARA TODAS
+> install.packages("patchwork")  # Solo si no lo tienes instalado
+Error in install.packages : Updating loaded packages
+> library(patchwork)
+> 
+> # Ejemplo de cómo podrías haber creado tus gráficas
+> grafica_nucleadas <- ggplot(datos, aes(x = CONDICIÓN, y = `Celulas nucleadas`)) + 
++   geom_boxplot() + 
++   labs(title = "Células Nucleadas por Condición")
+> 
+> grafica_cornificadas <- ggplot(datos, aes(x = CONDICIÓN, y = `Células cornificadas`)) + 
++   geom_boxplot() + 
++   labs(title = "Células Cornificadas por Condición")
+> 
+> grafica_leucocitos <- ggplot(datos, aes(x = CONDICIÓN, y = Leucocitos)) + 
++   geom_boxplot() + 
++   labs(title = "Leucocitos por Condición")
+> # Combinar las tres gráficas
+> combinacion_graficas <- grafica_nucleadas + grafica_cornificadas + grafica_leucocitos + 
++   plot_layout(ncol = 1)  # Cambia ncol a 2 o más para un diseño diferente
+> 
+> # Mostrar la combinación de gráficas
+> print(combinacion_graficas)
+> ##########################################################################################################
+> 
+> # Gráfico de violín para Células Nucleadas
+> grafico_violin_nucleadas <- ggplot(datos, aes(x = CONDICIÓN, y = `Proporción de células nucleadas (%)`, fill = CONDICIÓN)) +
++   geom_violin(trim = FALSE) +
++   labs(title = "Distribución de Proporción de Células Nucleadas por Condición", 
++        x = "Condición", y = "Proporción de Células Nucleadas (%)") +
++   theme_minimal()
+> 
+> # Mostrar gráfico
+> print(grafico_violin_nucleadas)
+> 
+> # Gráfico de violín para Células Cornificadas
+> grafico_violin_cornificadas <- ggplot(datos, aes(x = CONDICIÓN, y = `Proporción de células cornificadas (%)`, fill = CONDICIÓN)) +
++   geom_violin(trim = FALSE) +
++   labs(title = "Distribución de Proporción de Células Cornificadas por Condición", 
++        x = "Condición", y = "Proporción de Células Cornificadas (%)") +
++   theme_minimal()
+> 
+> # Mostrar gráfico
+> print(grafico_violin_cornificadas)
+> 
+> # Gráfico de violín para Leucocitos
+> grafico_violin_leucocitos <- ggplot(datos, aes(x = CONDICIÓN, y = `Proporción de leucocitos (%)`, fill = CONDICIÓN)) +
++   geom_violin(trim = FALSE) +
++   labs(title = "Distribución de Proporción de Leucocitos por Condición", 
++        x = "Condición", y = "Proporción de Leucocitos (%)") +
++   theme_minimal()
+> 
+> # Mostrar gráfico
+> print(grafico_violin_leucocitos)
+> 
+> # Gráfico de barras apiladas para todas las proporciones de células
+> library(tidyr)  # Necesario para gather
+> 
+> grafico_barras_apiladas <- datos %>%
++   gather(key = "TipoCelula", value = "Proporcion", 
++          `Proporción de células nucleadas (%)`, 
++          `Proporción de células cornificadas (%)`, 
++          `Proporción de leucocitos (%)`) %>%
++   ggplot(aes(x = CONDICIÓN, y = Proporcion, fill = TipoCelula)) +
++   geom_bar(stat = "identity", position = "fill") +
++   labs(title = "Composición de Tipos de Células por Condición",
++        x = "Condición", y = "Proporción (%)") +
++   theme_minimal()
+> 
+> # Mostrar gráfico
+> print(grafico_barras_apiladas)
+> 

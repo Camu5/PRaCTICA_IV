@@ -1,0 +1,379 @@
+> # ESTADÍSTICA PARA PRÁCTICA IV TALLER
+> 
+> # Instala paquetes si es necesario
+> install.packages("tidyverse")  # Incluye ggplot2, dplyr, etc.
+Error in install.packages : Updating loaded packages
+> install.packages("readr")
+Error in install.packages : Updating loaded packages
+> 
+> # Cargar librerías
+> library(tidyverse)
+> 
+> # Leer el archivo CSV
+> datos <- read_csv("C:/Users/HOME/Pictures/CICLO ESTRAL/Medidas extra/DATOS_CITOLOGÍA.csv", locale = locale(encoding = "ISO-8859-1"))
+Rows: 10 Columns: 10                                                                                     
+── Column specification ──────────────────────────────────────────────
+Delimiter: ","
+chr (3): ID, CONDICIÓN, FASE IDENTIFI.
+dbl (7): Celulas nucleadas, Células cornificadas, Leucocitos, Tota...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+> 
+> # Verificar los datos
+> head(datos)
+# A tibble: 6 × 10
+  ID     CONDICIÓN    `FASE IDENTIFI.` `Celulas nucleadas`
+  <chr>  <chr>        <chr>                          <dbl>
+1 1C_10x CONTROL      METAESTRO                          7
+2 1E_10x EXPERIMENTAL PROESTRO                          53
+3 2C_10x CONTROL      ESTRO                             18
+4 2E_10x EXPERIMENTAL ESTRO                             28
+5 3C_10x CONTROL      DIESTRO                            0
+6 3E_10x EXPERIMENTAL DIESTRO                           31
+# ℹ 6 more variables: `Células cornificadas` <dbl>, Leucocitos <dbl>,
+#   `Total células:` <dbl>,
+#   `Proporción de células nucleadas (%)` <dbl>,
+#   `Proporción de células cornificadas (%)` <dbl>,
+#   `Proporción de leucocitos (%)` <dbl>
+> 
+> # Convertir la columna 'CONDICIÓN' y 'FASE IDENTIFI.' en factores
+> datos$CONDICIÓN <- factor(datos$CONDICIÓN, levels = c("CONTROL", "EXPERIMENTAL"))
+> datos$`FASE IDENTIFI.` <- factor(datos$`FASE IDENTIFI.`)
+> 
+> # Verificar estructura de los datos
+> names(datos)
+ [1] "ID"                                    
+ [2] "CONDICIÓN"                             
+ [3] "FASE IDENTIFI."                        
+ [4] "Celulas nucleadas"                     
+ [5] "Células cornificadas"                  
+ [6] "Leucocitos"                            
+ [7] "Total células:"                        
+ [8] "Proporción de células nucleadas (%)"   
+ [9] "Proporción de células cornificadas (%)"
+[10] "Proporción de leucocitos (%)"          
+> str(datos)
+spc_tbl_ [10 × 10] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+ $ ID                                    : chr [1:10] "1C_10x" "1E_10x" "2C_10x" "2E_10x" ...
+ $ CONDICIÓN                             : Factor w/ 2 levels "CONTROL","EXPERIMENTAL": 1 2 1 2 1 2 1 2 1 2
+ $ FASE IDENTIFI.                        : Factor w/ 4 levels "DIESTRO","ESTRO",..: 3 4 2 2 1 1 2 2 2 2
+ $ Celulas nucleadas                     : num [1:10] 7 53 18 28 0 31 4 18 5 55
+ $ Células cornificadas                  : num [1:10] 0 0 26 34 2 0 13 25 34 295
+ $ Leucocitos                            : num [1:10] 24 8 6 0 101 296 0 0 0 0
+ $ Total células:                        : num [1:10] 31 61 50 62 103 327 17 43 39 350
+ $ Proporción de células nucleadas (%)   : num [1:10] 22.6 86.9 36 45.2 0 ...
+ $ Proporción de células cornificadas (%): num [1:10] 0 0 52 54.84 1.94 ...
+ $ Proporción de leucocitos (%)          : num [1:10] 77.4 13.1 12 0 98.1 ...
+ - attr(*, "spec")=
+  .. cols(
+  ..   ID = col_character(),
+  ..   CONDICIÓN = col_character(),
+  ..   `FASE IDENTIFI.` = col_character(),
+  ..   `Celulas nucleadas` = col_double(),
+  ..   `Células cornificadas` = col_double(),
+  ..   Leucocitos = col_double(),
+  ..   `Total células:` = col_double(),
+  ..   `Proporción de células nucleadas (%)` = col_double(),
+  ..   `Proporción de células cornificadas (%)` = col_double(),
+  ..   `Proporción de leucocitos (%)` = col_double()
+  .. )
+ - attr(*, "problems")=<externalptr> 
+> 
+> # Ver los niveles de la variable 'FASE IDENTIFI.'
+> levels(datos$`FASE IDENTIFI.`)
+[1] "DIESTRO"   "ESTRO"     "METAESTRO" "PROESTRO" 
+> 
+> # Renombrar la columna para evitar problemas
+> colnames(datos)[colnames(datos) == "FASE IDENTIFI."] <- "FASE_IDENTIFI"
+> 
+> # Cargar librería dplyr
+> library(dplyr)
+> 
+> ##########################################################################################################
+> # ESTADÍSTICA
+> 
+> # Instalar y cargar el paquete car si no lo tienes
+> install.packages("car")
+Error in install.packages : Updating loaded packages
+> library(car)
+> 
+> # Prueba de Levene para homogeneidad de varianzas
+> leveneTest(`Proporción de células nucleadas (%)` ~ `FASE_IDENTIFI`, data = datos)
+Levene's Test for Homogeneity of Variance (center = median)
+      Df F value  Pr(>F)  
+group  3  4.4525 0.05703 .
+       6                  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+> 
+> # ANOVA para la proporción de células nucleadas entre fases
+> # Guardar el modelo ANOVA en una variable
+> anova_modelo <- aov(`Proporción de células nucleadas (%)` ~ `FASE_IDENTIFI`, data = datos)
+> 
+> # Verificar el modelo
+> summary(anova_modelo)
+              Df Sum Sq Mean Sq F value Pr(>F)  
+FASE_IDENTIFI  3   4568  1522.7   9.242 0.0115 *
+Residuals      6    989   164.8                 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+> 
+> # Ejecutar TukeyHSD
+> tukey_nucleadas <- TukeyHSD(anova_modelo)
+> print(tukey_nucleadas)
+  Tukey multiple comparisons of means
+    95% family-wise confidence level
+
+Fit: aov(formula = `Proporción de células nucleadas (%)` ~ FASE_IDENTIFI, data = datos)
+
+$FASE_IDENTIFI
+                    diff        lwr       upr     p adj
+ESTRO-DIESTRO      24.44 -11.841117  60.72112 0.1924112
+METAESTRO-DIESTRO  17.84 -36.581676  72.26168 0.6838817
+PROESTRO-DIESTRO   82.15  27.728324 136.57168 0.0078535
+METAESTRO-ESTRO    -6.60 -54.595407  41.39541 0.9616794
+PROESTRO-ESTRO     57.71   9.714593 105.70541 0.0229074
+PROESTRO-METAESTRO 64.31   1.469262 127.15074 0.0455579
+
+> 
+> # ANOVA para proporción de células cornificadas
+> anova_cornificadas <- aov(`Proporción de células cornificadas (%)` ~ FASE_IDENTIFI, data = datos)
+> summary(anova_cornificadas)
+              Df Sum Sq Mean Sq F value  Pr(>F)   
+FASE_IDENTIFI  3  11208    3736   18.24 0.00203 **
+Residuals      6   1229     205                   
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+> 
+> # Ejecutar TukeyHSD
+> tukey_cornificadas <- TukeyHSD(anova_cornificadas)
+> print(tukey_cornificadas)
+  Tukey multiple comparisons of means
+    95% family-wise confidence level
+
+Fit: aov(formula = `Proporción de células cornificadas (%)` ~ FASE_IDENTIFI, data = datos)
+
+$FASE_IDENTIFI
+                            diff        lwr       upr     p adj
+ESTRO-DIESTRO       6.785000e+01   27.39370 108.30630 0.0046298
+METAESTRO-DIESTRO  -9.700000e-01  -61.65445  59.71445 0.9999320
+PROESTRO-DIESTRO   -9.700000e-01  -61.65445  59.71445 0.9999320
+METAESTRO-ESTRO    -6.882000e+01 -122.33866 -15.30134 0.0168901
+PROESTRO-ESTRO     -6.882000e+01 -122.33866 -15.30134 0.0168901
+PROESTRO-METAESTRO -2.842171e-14  -70.07237  70.07237 1.0000000
+
+> 
+> # ANOVA para proporción de leucocitos
+> anova_leucitos <- aov(`Proporción de leucocitos (%)` ~ FASE_IDENTIFI, data = datos)
+> summary(anova_leucitos)
+              Df Sum Sq Mean Sq F value   Pr(>F)    
+FASE_IDENTIFI  3  15496    5165   208.8 1.86e-06 ***
+Residuals      6    148      25                     
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+> 
+> # Ejecutar TukeyHSD
+> tukey_leucitos <- TukeyHSD(anova_leucitos)
+> print(tukey_leucitos)
+  Tukey multiple comparisons of means
+    95% family-wise confidence level
+
+Fit: aov(formula = `Proporción de leucocitos (%)` ~ FASE_IDENTIFI, data = datos)
+
+$FASE_IDENTIFI
+                     diff         lwr        upr     p adj
+ESTRO-DIESTRO      -92.29 -106.348025 -78.231975 0.0000020
+METAESTRO-DIESTRO  -16.87  -37.957037   4.217037 0.1134799
+PROESTRO-DIESTRO   -81.18 -102.267037 -60.092963 0.0000465
+METAESTRO-ESTRO     75.42   56.822981  94.017019 0.0000341
+PROESTRO-ESTRO      11.11   -7.487019  29.707019 0.2632383
+PROESTRO-METAESTRO -64.31  -88.659213 -39.960787 0.0004014
+
+> 
+> library(ggplot2)
+> library(patchwork)
+> 
+> # Calcular la media y el error estándar para cada tipo de célula
+> mean_data_nucleadas <- datos %>%
++   group_by(FASE_IDENTIFI) %>%
++   summarise(
++     mean_value = mean(`Proporción de células nucleadas (%)`, na.rm = TRUE),
++     se_value = sd(`Proporción de células nucleadas (%)`, na.rm = TRUE) / sqrt(n())
++   )
+> 
+> mean_data_cornificadas <- datos %>%
++   group_by(FASE_IDENTIFI) %>%
++   summarise(
++     mean_value = mean(`Proporción de células cornificadas (%)`, na.rm = TRUE),
++     se_value = sd(`Proporción de células cornificadas (%)`, na.rm = TRUE) / sqrt(n())
++   )
+> 
+> mean_data_leucitos <- datos %>%
++   group_by(FASE_IDENTIFI) %>%
++   summarise(
++     mean_value = mean(`Proporción de leucocitos (%)`, na.rm = TRUE),
++     se_value = sd(`Proporción de leucocitos (%)`, na.rm = TRUE) / sqrt(n())
++   )
+> 
+> # Gráfico de barras con intervalos de confianza para Proporción de Células Nucleadas
+> grafico_nucleadas <- ggplot(mean_data_nucleadas, aes(x = FASE_IDENTIFI, y = mean_value, fill = FASE_IDENTIFI)) +
++   geom_bar(stat = "identity") +
++   geom_errorbar(aes(ymin = mean_value - se_value, ymax = mean_value + se_value), width = 0.2) +
++   labs(title = "Media de Proporción de Células Nucleadas por Fase del Ciclo Estral",
++        x = "Fase del Ciclo Estral", y = "Media de Proporción de Células Nucleadas (%)") +
++   theme_minimal()
+> 
+> # Gráfico de barras con intervalos de confianza para Proporción de Células Cornificadas
+> grafico_cornificadas <- ggplot(mean_data_cornificadas, aes(x = FASE_IDENTIFI, y = mean_value, fill = FASE_IDENTIFI)) +
++   geom_bar(stat = "identity") +
++   geom_errorbar(aes(ymin = mean_value - se_value, ymax = mean_value + se_value), width = 0.2) +
++   labs(title = "Media de Proporción de Células Cornificadas por Fase del Ciclo Estral",
++        x = "Fase del Ciclo Estral", y = "Media de Proporción de Células Cornificadas (%)") +
++   theme_minimal()
+> 
+> # Gráfico de barras con intervalos de confianza para Proporción de Leucitos
+> grafico_leucitos <- ggplot(mean_data_leucitos, aes(x = FASE_IDENTIFI, y = mean_value, fill = FASE_IDENTIFI)) +
++   geom_bar(stat = "identity") +
++   geom_errorbar(aes(ymin = mean_value - se_value, ymax = mean_value + se_value), width = 0.2) +
++   labs(title = "Media de Proporción de Leucitos por Fase del Ciclo Estral",
++        x = "Fase del Ciclo Estral", y = "Media de Proporción de Leucitos (%)") +
++   theme_minimal()
+> 
+> # Combinar los gráficos usando patchwork
+> grafico_combinado <- grafico_nucleadas + grafico_cornificadas + grafico_leucitos +
++   plot_layout(ncol = 1)  # Colocar todos en una columna
+> 
+> # Mostrar la combinación de gráficos
+> print(grafico_combinado)
+> 
+> 
+> ############################
+> 
+> 
+> # Paso 1: Verificar la normalidad
+> shapiro_nucleadas <- shapiro.test(datos$`Proporción de células nucleadas (%)`)
+> shapiro_cornificadas <- shapiro.test(datos$`Proporción de células cornificadas (%)`)
+> shapiro_leucitos <- shapiro.test(datos$`Proporción de leucocitos (%)`)
+> 
+> # Imprimir resultados de las pruebas de normalidad
+> print(shapiro_nucleadas)
+
+	Shapiro-Wilk normality test
+
+data:  datos$`Proporción de células nucleadas (%)`
+W = 0.89045, p-value = 0.1716
+
+> print(shapiro_cornificadas)
+
+	Shapiro-Wilk normality test
+
+data:  datos$`Proporción de células cornificadas (%)`
+W = 0.82265, p-value = 0.02728
+
+> print(shapiro_leucitos)
+
+	Shapiro-Wilk normality test
+
+data:  datos$`Proporción de leucocitos (%)`
+W = 0.70099, p-value = 0.0009055
+
+> 
+> # Paso 2: Decidir qué prueba de correlación realizar
+> if (shapiro_nucleadas$p.value > 0.05) {
++   # Correlación de Pearson para nucleadas y leucitos
++   cor_pearson_nucleadas_leucitos <- cor.test(datos$`Proporción de células nucleadas (%)`, datos$`Proporción de leucocitos (%)`, method = "pearson")
++ } else {
++   # Correlación de Spearman para nucleadas y leucitos
++   cor_pearson_nucleadas_leucitos <- cor.test(datos$`Proporción de células nucleadas (%)`, datos$`Proporción de leucocitos (%)`, method = "spearman")
++ }
+> 
+> if (shapiro_cornificadas$p.value > 0.05) {
++   # Correlación de Pearson para cornificadas y leucitos
++   cor_pearson_cornificadas_leucitos <- cor.test(datos$`Proporción de células cornificadas (%)`, datos$`Proporción de leucocitos (%)`, method = "pearson")
++ } else {
++   # Correlación de Spearman para cornificadas y leucitos
++   cor_pearson_cornificadas_leucitos <- cor.test(datos$`Proporción de células cornificadas (%)`, datos$`Proporción de leucocitos (%)`, method = "spearman")
++ }
+Warning message:
+In cor.test.default(datos$`Proporción de células cornificadas (%)`,  :
+  Cannot compute exact p-value with ties
+> 
+> if (shapiro_nucleadas$p.value > 0.05 && shapiro_cornificadas$p.value > 0.05) {
++   # Correlación de Pearson entre nucleadas y cornificadas
++   cor_pearson_nucleadas_cornificadas <- cor.test(datos$`Proporción de células nucleadas (%)`, datos$`Proporción de células cornificadas (%)`, method = "pearson")
++ } else {
++   # Correlación de Spearman entre nucleadas y cornificadas
++   cor_pearson_nucleadas_cornificadas <- cor.test(datos$`Proporción de células nucleadas (%)`, datos$`Proporción de células cornificadas (%)`, method = "spearman")
++ }
+Warning message:
+In cor.test.default(datos$`Proporción de células nucleadas (%)`,  :
+  Cannot compute exact p-value with ties
+> 
+> # Imprimir resultados de las correlaciones
+> print(cor_pearson_nucleadas_leucitos)
+
+	Pearson's product-moment correlation
+
+data:  datos$`Proporción de células nucleadas (%)` and datos$`Proporción de leucocitos (%)`
+t = -1.506, df = 8, p-value = 0.1705
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.8485224  0.2267317
+sample estimates:
+       cor 
+-0.4699884 
+
+> print(cor_pearson_cornificadas_leucitos)
+
+	Spearman's rank correlation rho
+
+data:  datos$`Proporción de células cornificadas (%)` and datos$`Proporción de leucocitos (%)`
+S = 304.31, p-value = 0.002122
+alternative hypothesis: true rho is not equal to 0
+sample estimates:
+       rho 
+-0.8442922 
+
+> print(cor_pearson_nucleadas_cornificadas)
+
+	Spearman's rank correlation rho
+
+data:  datos$`Proporción de células nucleadas (%)` and datos$`Proporción de células cornificadas (%)`
+S = 176.14, p-value = 0.853
+alternative hypothesis: true rho is not equal to 0
+sample estimates:
+        rho 
+-0.06748974 
+
+> 
+> # Paso 3: Visualizar las correlaciones mediante gráficos de dispersión
+> # Gráfico para nucleadas y leucitos
+> ggplot(datos, aes(x = `Proporción de células nucleadas (%)`, y = `Proporción de leucocitos (%)`)) +
++   geom_point() +
++   geom_smooth(method = "lm", se = FALSE, color = "blue") +
++   labs(title = "Relación entre Proporción de Células Nucleadas y Proporción de Leucitos",
++        x = "Proporción de Células Nucleadas (%)",
++        y = "Proporción de Leucitos (%)") +
++   theme_minimal()
+`geom_smooth()` using formula = 'y ~ x'
+> 
+> # Gráfico para cornificadas y leucitos
+> ggplot(datos, aes(x = `Proporción de células cornificadas (%)`, y = `Proporción de leucocitos (%)`)) +
++   geom_point() +
++   geom_smooth(method = "lm", se = FALSE, color = "blue") +
++   labs(title = "Relación entre Proporción de Células Cornificadas y Proporción de Leucitos",
++        x = "Proporción de Células Cornificadas (%)",
++        y = "Proporción de Leucitos (%)") +
++   theme_minimal()
+`geom_smooth()` using formula = 'y ~ x'
+> 
+> # Gráfico para nucleadas y cornificadas
+> ggplot(datos, aes(x = `Proporción de células nucleadas (%)`, y = `Proporción de células cornificadas (%)`)) +
++   geom_point() +
++   geom_smooth(method = "lm", se = FALSE, color = "blue") +
++   labs(title = "Relación entre Proporción de Células Nucleadas y Proporción de Células Cornificadas",
++        x = "Proporción de Células Nucleadas (%)",
++        y = "Proporción de Células Cornificadas (%)") +
++   theme_minimal()
+`geom_smooth()` using formula = 'y ~ x'
